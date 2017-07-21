@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<launch>
+	<param name="robot_description" textfile="$(find cartographer_ros)/urdf/backpack_2d.urdf" />
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
+	</node>
+	<node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" args="-configuration_directory $(find cartographer_ros)/configuration_files -configuration_basename office_map_test.lua" output="screen" >
+	</node>
+	<node name="urg_node" pkg="urg_node" type="urg_node" >
+		 <param name="frame_id" value="horizontal_laser_link"/>
+	</node>
+	<node name="rviz" pkg="rviz" type="rviz" />
+	<node name="imu_frame_id_changer" pkg="imu_frame_id_changer" type="imu_frame_id_changer" />
+</launch>
