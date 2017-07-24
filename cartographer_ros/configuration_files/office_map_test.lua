@@ -5,14 +5,14 @@ options = {
   map_builder = MAP_BUILDER,
   trajectory_builder = TRAJECTORY_BUILDER,
   map_frame = "map",
-  tracking_frame = "imu_link",
+  tracking_frame = "base_link",
   published_frame = "base_link",
   odom_frame = "odom",
   provide_odom_frame = true,
   use_odometry = false,
-  use_laser_scan = true,
-  use_multi_echo_laser_scan = false,
-  num_subdivisions_per_laser_scan = 10,
+  num_laser_scans = 1,
+  num_multi_echo_laser_scans = 0,
+  num_subdivisions_per_laser_scan = 2,
   num_point_clouds = 0,
   lookup_transform_timeout_sec = 0.2,
   submap_publish_period_sec = 0.3,
@@ -20,6 +20,8 @@ options = {
   trajectory_publish_period_sec = 100e-3,
 }
 
+TRAJECTORY_BUILDER_2D.use_imu_data = false
 MAP_BUILDER.use_trajectory_builder_2d = true
+TRAJECTORY_BUILDER_2D.scans_per_accumulation = 2
 
 return options
