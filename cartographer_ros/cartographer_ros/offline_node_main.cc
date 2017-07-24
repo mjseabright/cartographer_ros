@@ -115,24 +115,19 @@ void Run(const std::vector<string>& bag_filenames) {
               .second);
   };
 
-  // For 2D SLAM, subscribe to exactly one horizontal laser.
-  if (trajectory_options.use_laser_scan) {
-    check_insert(kLaserScanTopic);
+  // Subscribe to all laser scan, multi echo laser scan, and point cloud topics.
+  for (const string& topic : ComputeRepeatedTopicNames(
+           kLaserScanTopic, trajectory_options.num_laser_scans)) {
+    check_insert(topic);
   }
-  if (trajectory_options.use_multi_echo_laser_scan) {
-    check_insert(kMultiEchoLaserScanTopic);
+  for (const string& topic : ComputeRepeatedTopicNames(
+           kMultiEchoLaserScanTopic,
+           trajectory_options.num_multi_echo_laser_scans)) {
+    check_insert(topic);
   }
-
-  // For 3D SLAM, subscribe to all point clouds topics.
-  if (trajectory_options.num_point_clouds > 0) {
-    for (int i = 0; i < trajectory_options.num_point_clouds; ++i) {
-      // TODO(hrapp): This code is duplicated in places. Pull out a method.
-      string topic = kPointCloud2Topic;
-      if (trajectory_options.num_point_clouds > 1) {
-        topic += "_" + std::to_string(i + 1);
-      }
-      check_insert(topic);
-    }
+  for (const string& topic : ComputeRepeatedTopicNames(
+           kPointCloud2Topic, trajectory_options.num_point_clouds)) {
+    check_insert(topic);
   }
 
   // For 2D SLAM, subscribe to the IMU if we expect it. For 3D SLAM, the IMU is
@@ -145,7 +140,7 @@ void Run(const std::vector<string>& bag_filenames) {
     check_insert(kImuTopic);
   }
 
-  // For both 2D and 3D SLAM, odometry is optional.
+  // Odometry is optional.
   if (trajectory_options.use_odometry) {
     check_insert(kOdometryTopic);
   }
@@ -278,8 +273,7 @@ void Run(const std::vector<string>& bag_filenames) {
             << (cpu_timespec.tv_sec + 1e-9 * cpu_timespec.tv_nsec) << " s";
 #endif
 
-  node.map_builder_bridge()->SerializeState(bag_filenames.front());
-  node.map_builder_bridge()->WriteAssets(bag_filenames.front());
+  node.map_builder_bridge()->SerializeState(bag_filenames.front() + ".pbstream");
 }
 
 }  // namespace
